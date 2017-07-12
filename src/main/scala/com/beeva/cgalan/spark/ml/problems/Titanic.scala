@@ -37,29 +37,33 @@ class Titanic(ss: SparkSession, ml: Ml[_], train: String, test: String) extends 
 
   def transformFeatures(dataFrame: DataFrame, label: Option[String]): DataFrame = {
 
-    //"Pclass : Converted to Vector"
-    val pClassVec = new OneHotEncoder().setInputCol("Pclass").setOutputCol("PclassVec")
+    //"Pclass : Converted to binary vector"
+    val pClassCat = new OneHotEncoder().setInputCol("Pclass").setOutputCol("PclassCat")
 
-    //"Sex : Binary"
-    val sexCat: StringIndexer = new StringIndexer().setInputCol("Sex").setOutputCol("SexCat")
+    //"Sex : Converted to binary vector"
+    val sexIndex: StringIndexer = new StringIndexer().setInputCol("Sex").setOutputCol("SexIndex")
+    val sexCat = new OneHotEncoder().setInputCol("SexIndex").setOutputCol("SexCat")
 
     //"Age : Bucketizer"
     val splits = Array(Double.NegativeInfinity, 12.0, 18.0, 30, 50, 100)
     val ageCat = new Bucketizer().setInputCol("Age").setOutputCol("AgeCat").setSplits(splits)
+
+    //SibSp
+
     //"Parch"
     //"Ticket"
     //"Fare"
     //"Cabin"
     //"Embarked"
 
-    val vectorAssembler = new VectorAssembler().setInputCols(Array("PclassVec", "SexCat", "AgeCat")).setOutputCol("features")
+    val vectorAssembler = new VectorAssembler().setInputCols(Array("PclassCat", "SexCat", "AgeCat")).setOutputCol("features")
 
     //Label
     val fittedPipeline = if (label.nonEmpty) {
       val binarizerClassifier = new Binarizer().setInputCol(label.get).setOutputCol("label")
 
-      new Pipeline().setStages(Array(pClassVec, sexCat, ageCat, vectorAssembler, binarizerClassifier)).fit(dataFrame)
-    } else new Pipeline().setStages(Array(pClassVec, sexCat, ageCat, vectorAssembler)).fit(dataFrame)
+      new Pipeline().setStages(Array(pClassCat, sexIndex, sexCat, ageCat, vectorAssembler, binarizerClassifier)).fit(dataFrame)
+    } else new Pipeline().setStages(Array(pClassCat, sexIndex, sexCat, ageCat, vectorAssembler)).fit(dataFrame)
 
     fittedPipeline.transform(dataFrame)
   }

@@ -1,9 +1,10 @@
 package com.beeva.cgalan.spark.ml
 
-import com.beeva.cgalan.spark.ml.algorithm.{LogisticRegression, Ml, NaiveBayes}
+import com.beeva.cgalan.spark.ml.algorithm.{DecisionTree, LogisticRegression, Ml, NaiveBayes}
 import com.beeva.cgalan.spark.ml.problems.{Problem, Titanic}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
+import org.apache.log4j.{Level, Logger}
 
 /**
   * Created by cristiangalan on 6/07/17.
@@ -13,6 +14,9 @@ object Main {
   val ARGS: (Int, Int) = (2, 4)
 
   def main(args: Array[String]): Unit = {
+
+    Logger.getLogger("org").setLevel(Level.WARN)
+    Logger.getLogger("akka").setLevel(Level.WARN)
 
     if (args.length != ARGS._1 && args.length != ARGS._2) {
       println("Add an argument")
@@ -31,6 +35,7 @@ object Main {
     val ml: Option[Ml[_]] = args(1) match {
       case "logistic" => Some(new LogisticRegression())
       case "naives" => Some(new NaiveBayes())
+      case "tree" => Some(new DecisionTree())
       case _ => None
     }
 
@@ -40,7 +45,8 @@ object Main {
       }
 
       value.start()
-    }
+    }else
+      println("Add an ML argument")
 
   }
 }
