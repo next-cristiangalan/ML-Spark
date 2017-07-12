@@ -40,13 +40,13 @@ class Titanic(ss: SparkSession, ml: Ml[_], train: String, test: String) extends 
     //"Pclass : Converted to binary vector"
     val pClassCat = new OneHotEncoder().setInputCol("Pclass").setOutputCol("PclassCat")
 
-    //"Sex : Converted to binary vector"
-    val sexIndex: StringIndexer = new StringIndexer().setInputCol("Sex").setOutputCol("SexIndex")
-    val sexCat = new OneHotEncoder().setInputCol("SexIndex").setOutputCol("SexCat")
+    //"Sex : Converted to binary"
+    val sexCat = new StringIndexer().setInputCol("Sex").setOutputCol("SexCat")
 
     //"Age : Bucketizer"
-    val splits = Array(Double.NegativeInfinity, 12.0, 18.0, 30, 50, 100)
-    val ageCat = new Bucketizer().setInputCol("Age").setOutputCol("AgeCat").setSplits(splits)
+    val splits = Array(Double.NegativeInfinity, -1, 10, 18, 30, 50, 100)
+    val ageBucket = new Bucketizer().setInputCol("Age").setOutputCol("AgeBucket").setSplits(splits)
+    val ageCat = new OneHotEncoder().setInputCol("AgeBucket").setOutputCol("AgeCat")
 
     //SibSp
 
@@ -62,8 +62,8 @@ class Titanic(ss: SparkSession, ml: Ml[_], train: String, test: String) extends 
     val fittedPipeline = if (label.nonEmpty) {
       val binarizerClassifier = new Binarizer().setInputCol(label.get).setOutputCol("label")
 
-      new Pipeline().setStages(Array(pClassCat, sexIndex, sexCat, ageCat, vectorAssembler, binarizerClassifier)).fit(dataFrame)
-    } else new Pipeline().setStages(Array(pClassCat, sexIndex, sexCat, ageCat, vectorAssembler)).fit(dataFrame)
+      new Pipeline().setStages(Array(pClassCat, sexCat, ageBucket, ageCat, vectorAssembler, binarizerClassifier)).fit(dataFrame)
+    } else new Pipeline().setStages(Array(pClassCat, sexCat, ageBucket, ageCat, vectorAssembler)).fit(dataFrame)
 
     fittedPipeline.transform(dataFrame)
   }

@@ -9,19 +9,22 @@ import scala.util.Random
 /**
   * Created by cristiangalan on 6/07/17.
   */
-class DecisionTree extends Ml[DecisionTreeClassificationModel] {
+class DecisionTree(maxDepth : Int = 5, maxBins : Int = 32) extends Ml[DecisionTreeClassificationModel] {
 
+  val decisionTree: DecisionTreeClassifier = new DecisionTreeClassifier().setMaxDepth(maxDepth).setMaxBins(maxBins)
   var model: DecisionTreeClassificationModel = _
 
   override def train(train: DataFrame): Unit = {
     val Array(trainingData, testData) = train.randomSplit(Array(0.7, 0.3), seed = Random.nextLong())
 
     // Train a DecisionTree model.
-    model = new DecisionTreeClassifier().fit(trainingData)
+    model = decisionTree.fit(trainingData)
     println("Learned classification tree model:\n" + model.toDebugString)
 
     // Select (prediction, true label) and compute test error
     test(testData, model)
+
+    model = decisionTree.fit(train)
   }
 
   override def evaluation(test: DataFrame): DataFrame = {
