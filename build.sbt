@@ -1,8 +1,8 @@
-name := "MlTraining"
+name := "Ml-Spark"
 
 organization := "Beeva"
 
-name := "MlTraining"
+name := "Ml-Spark"
 
 version := "1.0"
 
