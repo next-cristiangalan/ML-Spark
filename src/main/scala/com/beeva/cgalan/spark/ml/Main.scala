@@ -1,10 +1,11 @@
 package com.beeva.cgalan.spark.ml
 
-import com.beeva.cgalan.spark.ml.algorithm.{DecisionTree, LogisticRegression, Ml, NaiveBayes}
+import com.beeva.cgalan.spark.ml.algorithm.{CrossValidation, _}
 import com.beeva.cgalan.spark.ml.problems.{Problem, Titanic}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.log4j.{Level, Logger}
+import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
 
 /**
   * Created by cristiangalan on 6/07/17.
@@ -36,6 +37,7 @@ object Main {
       case "logistic" => Some(new LogisticRegression())
       case "naives" => Some(new NaiveBayes())
       case "tree" => Some(new DecisionTree())
+      case "binary" => Some(new CrossValidation(,))
       case _ => None
     }
 
@@ -44,9 +46,11 @@ object Main {
         case "titanic" => new Titanic(ss, ml.get, train, test)
       }
 
-      value.start()
+      if(CrossValidation){
+        value.multiStart()
+      }else
+        value.start()
     }else
       println("Add an ML argument")
-
   }
 }

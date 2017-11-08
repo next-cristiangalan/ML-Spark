@@ -7,6 +7,7 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.IntegerType
 
 import scala.util.Random
+import com.beeva.cgalan.spark.ml.utils.Utils.getTime
 
 /**
   * Created by cristiangalan on 6/07/17.
@@ -18,10 +19,17 @@ class LogisticRegression(maxIter : Int = 100) extends Ml[LogisticRegressionModel
 
   var model: LogisticRegressionModel = _
 
-  override def train(train: DataFrame): Unit = {
+  override def train(train: DataFrame) = getTime {
     val Array(trainingData, testData) = train.randomSplit(Array(0.7, 0.3), seed = Random.nextLong())
 
-    model = lr.fit(trainingData)
+    val lr: classification.LogisticRegression = new ml.classification.LogisticRegression()
+      .setMaxIter(maxIter)
+
+    val model = lr.fit(trainingData)
+    model.save("/tmp")
+
+    val prediction = model.transform(testData)
+
 
     // Print the coefficients and intercept for logistic regression
     println(s"Coefficients: ${model.coefficients} Intercept: ${model.intercept}")
@@ -33,7 +41,7 @@ class LogisticRegression(maxIter : Int = 100) extends Ml[LogisticRegressionModel
     model = lr.fit(train)
   }
 
-  override def evaluation(test: DataFrame): DataFrame = {
+  override def evaluation(test: DataFrame) = getTime {
     val predictions = model.transform(test)
     predictions.withColumn("prediction", predictions("prediction").cast(IntegerType))
   }

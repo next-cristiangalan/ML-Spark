@@ -5,6 +5,8 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.IntegerType
 
 import scala.util.Random
+import com.beeva.cgalan.spark.ml.utils.Utils.getTime
+
 
 /**
   * Created by cristiangalan on 6/07/17.
@@ -14,7 +16,7 @@ class DecisionTree(maxDepth : Int = 5, maxBins : Int = 32) extends Ml[DecisionTr
   val decisionTree: DecisionTreeClassifier = new DecisionTreeClassifier().setMaxDepth(maxDepth).setMaxBins(maxBins)
   var model: DecisionTreeClassificationModel = _
 
-  override def train(train: DataFrame): Unit = {
+  override def train(train: DataFrame) = getTime {
     val Array(trainingData, testData) = train.randomSplit(Array(0.7, 0.3), seed = Random.nextLong())
 
     // Train a DecisionTree model.
@@ -27,7 +29,7 @@ class DecisionTree(maxDepth : Int = 5, maxBins : Int = 32) extends Ml[DecisionTr
     model = decisionTree.fit(train)
   }
 
-  override def evaluation(test: DataFrame): DataFrame = {
+  override def evaluation(test: DataFrame) = getTime {
     val predictions = model.transform(test)
     predictions.withColumn("prediction", predictions("prediction").cast(IntegerType))
   }
