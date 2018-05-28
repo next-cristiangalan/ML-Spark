@@ -36,8 +36,9 @@ object Main {
     val ml: Option[Ml[_]] = args(1) match {
       case "logistic" => Some(new LogisticRegression())
       case "naives" => Some(new NaiveBayes())
-      case "tree" => Some(new DecisionTree())
-      case "binary" => Some(new CrossValidation(,))
+      case "dtc" => Some(new DecisionTreeClassification())
+      case "dtr" => Some(new DecisionTreeRegression())
+      case "binary" => Some(new CrossValidation())
       case _ => None
     }
 
@@ -46,7 +47,7 @@ object Main {
         case "titanic" => new Titanic(ss, ml.get, train, test)
       }
 
-      if(CrossValidation){
+      if(ml.get.isInstanceOf[CrossValidation]){
         value.multiStart()
       }else
         value.start()

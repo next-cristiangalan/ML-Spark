@@ -8,8 +8,8 @@ learning the new ML library of Spark 2.0 and machine learning algorithms using l
  
  Dependencies:
  ----------
- - Scala 2.11.8
- - Spark 2.2.0
+ - Scala 2.11.11
+ - Spark 2.3.0
   
  Algorithm:
  ----------
