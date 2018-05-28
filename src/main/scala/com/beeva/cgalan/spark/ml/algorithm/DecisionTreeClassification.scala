@@ -11,7 +11,7 @@ import com.beeva.cgalan.spark.ml.utils.Utils.getTime
 /**
   * Created by cristiangalan on 6/07/17.
   */
-class DecisionTree(maxDepth : Int = 5, maxBins : Int = 32) extends Ml[DecisionTreeClassificationModel] {
+class DecisionTreeClassification(maxDepth : Int = 5, maxBins : Int = 32) extends Ml[DecisionTreeClassificationModel] {
 
   val decisionTree: DecisionTreeClassifier = new DecisionTreeClassifier().setMaxDepth(maxDepth).setMaxBins(maxBins)
   var model: DecisionTreeClassificationModel = _

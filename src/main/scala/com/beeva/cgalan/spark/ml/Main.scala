@@ -5,7 +5,7 @@ import com.beeva.cgalan.spark.ml.problems.{Problem, Titanic}
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
+
 
 /**
   * Created by cristiangalan on 6/07/17.
